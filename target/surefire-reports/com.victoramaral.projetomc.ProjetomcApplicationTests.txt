@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.victoramaral.projetomc.ProjetomcApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.654 s - in com.victoramaral.projetomc.ProjetomcApplicationTests

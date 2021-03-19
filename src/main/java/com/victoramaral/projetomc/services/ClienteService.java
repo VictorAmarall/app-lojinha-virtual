@@ -18,9 +18,12 @@ import com.victoramaral.projetomc.DTO.ClienteNewDTO;
 import com.victoramaral.projetomc.domain.Cidade;
 import com.victoramaral.projetomc.domain.Cliente;
 import com.victoramaral.projetomc.domain.Endereco;
+import com.victoramaral.projetomc.domain.enums.Perfil;
 import com.victoramaral.projetomc.domain.enums.TipoCliente;
 import com.victoramaral.projetomc.repositories.ClienteRepository;
 import com.victoramaral.projetomc.repositories.EnderecoRepository;
+import com.victoramaral.projetomc.security.UserSS;
+import com.victoramaral.projetomc.services.exceptions.AuthorizationException;
 import com.victoramaral.projetomc.services.exceptions.DataIntegrityException;
 import com.victoramaral.projetomc.services.exceptions.ObjectNotFoundException;
 
@@ -38,6 +41,11 @@ public class ClienteService {
 	private EnderecoRepository endederecoRepository;
 	@Transactional
 	public Cliente Buscar(Integer id) {
+		
+		UserSS user = UserService.authenticated();
+		if (user==null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");
+		}
 		 Optional<Cliente> obj = repo.findDistinctById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 		 "Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));

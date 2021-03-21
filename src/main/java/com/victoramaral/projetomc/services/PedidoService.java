@@ -13,8 +13,12 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.victoramaral.projetomc.domain.Cliente;
 import com.victoramaral.projetomc.domain.ItemPedido;
 import com.victoramaral.projetomc.domain.PagamentoComBoleto;
 import com.victoramaral.projetomc.domain.Pedido;
@@ -22,6 +26,8 @@ import com.victoramaral.projetomc.domain.enums.EstadoPagamento;
 import com.victoramaral.projetomc.repositories.ItemPedidoRepository;
 import com.victoramaral.projetomc.repositories.PagamentoRepository;
 import com.victoramaral.projetomc.repositories.PedidoRepository;
+import com.victoramaral.projetomc.security.UserSS;
+import com.victoramaral.projetomc.services.exceptions.AuthorizationException;
 
 
 
@@ -102,6 +108,16 @@ public class PedidoService {
 			emailService.sendOrderConfirmationHtmlEmail(obj);
 			System.out.println(obj);
 			return obj;
+		}
+		public Page<Pedido> buscarPage(Integer page, Integer linesPerPage, String orderBy,String direction){
+			UserSS user = UserService.authenticated();
+			if (user == null) {
+				throw new AuthorizationException("Acesso negado");
+			}
+			PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction),
+					orderBy);
+			Cliente cliente =  clienteService.Buscar(user.getId());
+			return repo.findByCliente(cliente ,pageRequest);
 		}
 
 
